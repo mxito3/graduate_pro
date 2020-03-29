@@ -10,6 +10,7 @@ from .helpers import opcode, padded_hex, cached
 from .helpers import COLOR_HEADER, COLOR_BLUE, COLOR_OKGREEN, COLOR_WARNING, FAIL, ENDC, COLOR_BOLD, COLOR_UNDERLINE, COLOR_GREEN, COLOR_GRAY
 
 
+
 '''
     a module for management of bytes4 signatures from the database
 
@@ -165,15 +166,16 @@ def fetch_db():
 
     print('fetching supplement.zip...')
     url = 'http://eveem.org/static/supplement.zip'
-    urllib.request.urlretrieve(url, 'tmp.supplement.db.zip', reporthook)
-    print('')
-    print('unzipping into supplement.db...')
-    with ZipFile('tmp.supplement.db.zip') as myzip:
+    # print(myfile)
+    # urllib.request.urlretrieve(url, 'tmp.supplement.db.zip', reporthook)
+    # print('')
+    # print('unzipping into supplement.db...')
+    with ZipFile('supplement.zip') as myzip:
         with myzip.open('supplement.db') as myfile:
             with open('supplement.db', 'wb') as file:
                 file.write(myfile.read())
 
-    os.remove('tmp.supplement.db.zip')
+    # os.remove('tmp.supplement.db.zip')
     print('done.')
 
 '''

@@ -10,3 +10,4 @@ cache_pan
 supplement.db
 supp2.db
 cache_*
+venv/

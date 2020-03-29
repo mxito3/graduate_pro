@@ -31,7 +31,7 @@ def code_fetch(address, network='mainnet'):
     if network == 'goerli':
         url = f"https://goerli.infura.io/v3/{secret.INFURA_KEY}"
     else:
-        url = f"https://{network}.infura.io/"
+        url = f"https://mainnet.infura.io/v3/89744c6f98e340da93b81d038beb9210"
 
     from web3 import Web3, HTTPProvider
 
