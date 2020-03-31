@@ -113,7 +113,12 @@ addr_shortcuts = {
     Main decompilation code
 
 '''
-
+def whether_have_fallback(functions):
+    for func in functions:
+        res=func.whether_fallback()
+        if res:
+            return True
+    return False
 def decompile(this_addr, only_func_name=None):
 
     '''
@@ -190,7 +195,7 @@ def decompile(this_addr, only_func_name=None):
 
     loader = Loader()
     loader.load(this_addr)
-    loader.run(VM(loader, just_fdests=True))
+    abi=loader.run(VM(loader, just_fdests=True))
 
     if len(loader.lines) == 0:
         this_fname = cache_fname(this_addr, 'pan')
@@ -235,7 +240,7 @@ def decompile(this_addr, only_func_name=None):
             # skip all the functions that are not it
             continue
 
-        logger.info(C.green + f"Parsing {fname}..." + C.end) # this absolutely needs to be green! :D
+        # logger.info(C.green + f"Parsing {fname}..." + C.end) # this absolutely needs to be green! :D
 
         try:
             if target > 1:
@@ -272,8 +277,9 @@ def decompile(this_addr, only_func_name=None):
             logger.error(f"Problem with %s%s\n%s", fname, C.end, traceback.format_exc())
 
             if '--silent' not in sys.argv:
-                print()
-                print()
+                pass
+                # print()
+                # print()
 
             if '--strict' in sys.argv:
                 raise
@@ -316,106 +322,105 @@ def decompile(this_addr, only_func_name=None):
 
     this_fname = cache_fname(this_addr, 'pan')
     pan_fd = open(this_fname, 'w')
-    with redirect_stdout(pan_fd):
+    # with redirect_stdout(pan_fd):
 
-        '''
-            Print out decompilation header
-        '''
+    #     '''
+    #         Print out decompilation header
+    #     '''
 
-        assert loader.network != 'none' # otherwise, the code is empty, and we caught it before
+    #     assert loader.network != 'none' # otherwise, the code is empty, and we caught it before
 
-        print(C.gray+"#")
-        print(f"#  Panoramix {VER} ")
+    #     print(C.gray+"#")
+    #     print(f"#  Panoramix {VER} ")
 
-        if loader.network != 'mainnet':
-            pretty_addr = f"{C.end + C.okgreen}{loader.network}:{loader.addr}{C.end + C.gray}"
-        else:
-            pretty_addr = f'{C.end}{loader.addr}{C.gray}'
+    #     if loader.network != 'mainnet':
+    #         pretty_addr = f"{C.end + C.okgreen}{loader.network}:{loader.addr}{C.end + C.gray}"
+    #     else:
+    #         pretty_addr = f'{C.end}{loader.addr}{C.gray}'
 
-        print("#  Decompiled source of "+pretty_addr)
-        print("# ")
-        print("#  Let's make the world open source ")
-        print("# " + C.end)
+    #     print("#  Decompiled source of "+pretty_addr)
+    #     print("# ")
+    #     print("#  Let's make the world open source ")
+    #     print("# " + C.end)
 
-        if len(problems)>0:
-            print(C.gray+"#")
-            print("#  I failed with these: ")
-            for p in problems.values():
-                print(f'{C.end}{C.gray}#  - {C.end}{C.fail}{p}{C.end}{C.gray}')
-            print('#  All the rest is below.')
-            print('#'+C.end)
+    #     if len(problems)>0:
+    #         print(C.gray+"#")
+    #         print("#  I failed with these: ")
+    #         for p in problems.values():
+    #             print(f'{C.end}{C.gray}#  - {C.end}{C.fail}{p}{C.end}{C.gray}')
+    #         print('#  All the rest is below.')
+    #         print('#'+C.end)
 
-        print()
+    #     print()
 
 
-        '''
-            Print out constants & storage
-        '''
+    #     '''
+    #         Print out constants & storage
+    #     '''
 
-        shown_already = set()
+    #     shown_already = set()
 
-        for func in contract.consts:
-            shown_already.add(func.hash)
-            print(func.print())
+    #     for func in contract.consts:
+    #         shown_already.add(func.hash)
+    #         print(func.print())
 
-        if len(shown_already) > 0:
-            print()
+    #     if len(shown_already) > 0:
+    #         print()
 
-        if len(contract.stor_defs) > 0:
-            print(f'{C.green}def {C.end}storage:')
+    #     if len(contract.stor_defs) > 0:
+    #         print(f'{C.green}def {C.end}storage:')
 
-            storage = {}
+    #         storage = {}
 
-            for s in contract.stor_defs:
-                print(pretty_type(s))
+    #         for s in contract.stor_defs:
+    #             print(pretty_type(s))
 
-            print()
+    #         print()
 
-        '''
-            Print out getters
-        '''
+    #     '''
+    #         Print out getters
+    #     '''
 
-        for hash, func in functions.items():
-            if func.getter is not None:
-                shown_already.add(hash)
-                print(func.print())
+    #     for hash, func in functions.items():
+    #         if func.getter is not None:
+    #             shown_already.add(hash)
+    #             print(func.print())
 
-                if '--repr' in sys.argv:
-                    print()
-                    pprint_repr(func.trace)
+    #             if '--repr' in sys.argv:
+    #                 print()
+    #                 pprint_repr(func.trace)
 
-                print()
+    #             print()
 
-        '''
-            Print out regular functions
-        '''
+    #     '''
+    #         Print out regular functions
+    #     '''
 
-        func_list = list(contract.functions)
-        func_list.sort(key= lambda f:f.priority())  # sort func list by length, with some caveats
+    #     func_list = list(contract.functions)
+    #     func_list.sort(key= lambda f:f.priority())  # sort func list by length, with some caveats
 
-        if len([f for f in func_list if f.hash not in shown_already]) > 0:
-            if len(shown_already) > 0: # otherwise no irregular functions, so this is not needed :)
-                print("" + C.gray + '#\n#  Regular functions\n#' + C.end +"\n")
+    #     if len([f for f in func_list if f.hash not in shown_already]) > 0:
+    #         if len(shown_already) > 0: # otherwise no irregular functions, so this is not needed :)
+    #             print("" + C.gray + '#\n#  Regular functions\n#' + C.end +"\n")
 
-        else:
-            print("\n" + C.gray + '#\n#  No regular functions. That\'s it.\n#' + C.end + "\n\n")
+    #     else:
+    #         print("\n" + C.gray + '#\n#  No regular functions. That\'s it.\n#' + C.end + "\n\n")
 
-        for func in func_list:
-            hash = func.hash
+    #     for func in func_list:
+    #         hash = func.hash
+    #         if hash not in shown_already:
+    #             shown_already.add(hash)
 
-            if hash not in shown_already:
-                shown_already.add(hash)
+    #             print(func.print())
+    #             # print("hfjifrefirfji")
+    #             if '--returns' in sys.argv:
+    #                 for r in func.returns:
+    #                     print(r)
 
-                print(func.print())
+    #             if '--repr' in sys.argv:
+    #                 pprint_repr(func.orig_trace)
 
-                if '--returns' in sys.argv:
-                    for r in func.returns:
-                        print(r)
-
-                if '--repr' in sys.argv:
-                    pprint_repr(func.orig_trace)
-
-                print()
+    #             print()
 
     '''
 
@@ -429,6 +434,11 @@ def decompile(this_addr, only_func_name=None):
         print('\n')
         print(open(this_fname).read())
 
+    have_fallback=whether_have_fallback(contract.functions)
+    # print("============{}".format(have_fallback))
+    # print(contract.functions)
+    # print(abi)
+    return abi,have_fallback
 def decompile_bulk(addr_list):
     i = 0
     for addr in addr_list:
@@ -437,72 +447,74 @@ def decompile_bulk(addr_list):
         decompile(addr)
 
 
-'''
+if __name__ == "__main__":
+        
+    '''
 
-    Command line initialisation
+        Command line initialisation
 
-'''
+    '''
 
-bulk_list = None
-function_name = None
+    bulk_list = None
+    function_name = None
 
-if len(sys.argv) == 1:
-    print(f"""
-    python3 panoramix.py [address|shortcut|stdin|random] [func_name] [--verbose] [--silent]
+    if len(sys.argv) == 1:
+        print(f"""
+        python3 panoramix.py [address|shortcut|stdin|random] [func_name] [--verbose] [--silent]
 
-        address: {C.gray}e.g. 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d
-                 you can provide multiple, separating with comma{C.end}
+            address: {C.gray}e.g. 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d
+                    you can provide multiple, separating with comma{C.end}
 
-        shortcut: {C.gray}e.g. kitties, unicorn, solidstamp{C.end}
-        random: {C.gray}a random smart contract{C.end}
-        stdin: {C.gray}bytecode from stdin{C.end}
+            shortcut: {C.gray}e.g. kitties, unicorn, solidstamp{C.end}
+            random: {C.gray}a random smart contract{C.end}
+            stdin: {C.gray}bytecode from stdin{C.end}
 
-        --silent: {C.gray}writes output only to the ./cache_pan/ directory{C.end}
+            --silent: {C.gray}writes output only to the ./cache_pan/ directory{C.end}
 
-    """)
+        """)
 
-    exit()
+        exit()
 
-if sys.argv[1] == 'stdin':
-    body_full = sys.stdin.read().strip()
-    if not os.path.isdir('cache_stdin'):
-        os.mkdir('cache_stdin')
+    if sys.argv[1] == 'stdin':
+        body_full = sys.stdin.read().strip()
+        if not os.path.isdir('cache_stdin'):
+            os.mkdir('cache_stdin')
 
-    this_addr = None
-    bulk_list = []
-    for body in body_full.split(' '):
+        this_addr = None
+        bulk_list = []
+        for body in body_full.split(' '):
 
-        addr = hex(abs(hash(body)))
+            addr = hex(abs(hash(body)))
 
-        fname = f'cache_stdin/{addr}.bin'
-        bulk_list.append(addr)
+            fname = f'cache_stdin/{addr}.bin'
+            bulk_list.append(addr)
 
-        with open(fname, 'w') as f:
-            f.write(body)
+            with open(fname, 'w') as f:
+                f.write(body)
 
-    decompile_bulk(bulk_list)
+        decompile_bulk(bulk_list)
 
-elif sys.argv[1] == 'bulk':
-    decompile_bulk(various.addr_list[:100])
+    elif sys.argv[1] == 'bulk':
+        decompile_bulk(various.addr_list[:100])
 
-elif ',' in sys.argv[1]:
-    decompile_bulk(sys.argv[1].split(','))
+    elif ',' in sys.argv[1]:
+        decompile_bulk(sys.argv[1].split(','))
 
-else:
-    this_addr = sys.argv[1]
+    else:
+        this_addr = sys.argv[1]
 
-    if this_addr.lower() in addr_shortcuts:
-        this_addr = addr_shortcuts[this_addr.lower()]
+        if this_addr.lower() in addr_shortcuts:
+            this_addr = addr_shortcuts[this_addr.lower()]
 
-    elif this_addr.lower() == 'random':
-        from various import random_addresses
-        this_addr = random_addresses[random.randint(0, len(random_addresses))]
+        elif this_addr.lower() == 'random':
+            from various import random_addresses
+            this_addr = random_addresses[random.randint(0, len(random_addresses))]
 
-    if len(sys.argv) > 2:
-        if not sys.argv[2].startswith('--'):
-            function_name = sys.argv[2]
-        else:
-            function_name = None
+        if len(sys.argv) > 2:
+            if not sys.argv[2].startswith('--'):
+                function_name = sys.argv[2]
+            else:
+                function_name = None
 
-    decompile(this_addr, function_name)
+        decompile(this_addr, function_name)
 

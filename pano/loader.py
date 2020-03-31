@@ -31,7 +31,8 @@ def code_fetch(address, network='mainnet'):
     if network == 'goerli':
         url = f"https://goerli.infura.io/v3/{secret.INFURA_KEY}"
     else:
-        url = f"https://mainnet.infura.io/v3/89744c6f98e340da93b81d038beb9210"
+        # url = f"https://mainnet.infura.io/v3/89744c6f98e340da93b81d038beb9210"
+        url="http://127.0.0.1:8545"
 
     from web3 import Web3, HTTPProvider
 
@@ -92,11 +93,15 @@ class Loader(EasyCopy):
             self.load_stdin(this_addr)
 
     def load_stdin(self, hash_id):
+        # print(hash_id)
         assure_dir_exists('cache_stdin')
 
-        fname = f'cache_stdin/{hash_id}.bin'
+        fname = 'cache_stdin/{}'.format(hash_id)
+        # fname="1"
+        # print("edffew{}".format(fname))
         address = hash_id
         self.addr = hash_id
+        # print(fname)
         with open(fname) as f:
             code = f.read()
             self.network = 'stdin'
@@ -196,9 +201,12 @@ class Loader(EasyCopy):
             self.add_func(0, name='_fallback()')
 
         abi = make_abi(self.hash_targets)
+        # print(abi)
         for hash, target in self.hash_targets.items():
             fname = get_func_name(hash)
             self.func_list.append((hash, fname ,target, ))
+        return abi
+        
 
     def next_line(self, i):
         i += 1

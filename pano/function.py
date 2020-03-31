@@ -275,7 +275,25 @@ class Function(EasyCopy):
                 res = ['  stop']
 
             return header + res
-
+    def whether_fallback(self):
+        if self.payable and self.name == "_fallback()":
+            if self.ast is not None:
+                res = list(pprint_logic(self.ast))
+            else:
+                res = list(pprint_logic(self.trace))
+            try:
+                res=str(res[0]).strip()[-6:]
+                if "revert" == res:
+                    return False 
+                return True
+            except :
+                return True
+            
+        else:
+            return False
+        
+    
+       
     def simplify_string_getter_from_storage(self):
         ''' 
             a heuristic for finding string getters and replacing them
