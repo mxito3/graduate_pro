@@ -7,11 +7,12 @@ class ABIUtil():
     @staticmethod
     def get_abi(addr):
         abi,have_fallback=decompile(addr)
-        result=[]
+        result={}
         has_fallback=False
-        print(abi)
+        # print(abi)
         for k,v in abi.items():
             name=v.get('name')
+            
             # print(v)
             if not name:
                 name=v.get('fname')
@@ -20,7 +21,7 @@ class ABIUtil():
                 else:  #unknown
                     continue
             params=v['params']
-            result.append({'name':name,'params':params})
+            result[k]={'name':name,'params':params}
         return result,have_fallback
 
 
