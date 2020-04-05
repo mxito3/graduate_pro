@@ -9,7 +9,6 @@ class ABIUtil():
         abi,have_fallback=decompile(addr)
         result={}
         has_fallback=False
-        # print(abi)
         for k,v in abi.items():
             name=v.get('name')
             
@@ -21,7 +20,8 @@ class ABIUtil():
                 else:  #unknown
                     continue
             params=v['params']
-            result[k]={'name':name,'params':params}
+            payable=v['payable']
+            result[k]={'name':name,'params':params,'payable':payable}
         return result,have_fallback
 
 

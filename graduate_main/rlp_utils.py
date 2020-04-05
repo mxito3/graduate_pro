@@ -22,22 +22,35 @@ class RLPUtil():
     @staticmethod
     def get_data_from_raw(raw):
         tx_deserialized=RLPUtil.decode(raw)
+        # print(tx_deserialized)
         data=tx_deserialized['data']
         contract_addr=Web3.toChecksumAddress(tx_deserialized['to'])
-        return data,contract_addr
+        value=tx_deserialized['value']
+        return data,contract_addr,value
     @staticmethod
     def get_params(raw):
-        data,contract_addr=RLPUtil.get_data_from_raw(raw)
-        method_id=data[0:10]
+        data,contract_addr,value=RLPUtil.get_data_from_raw(raw)
+        params_index_start=10
+        method_id=data[0:params_index_start]
         params=[]
-        index_start=10
-        for index in range(int(len(data[10:])/64)):
-            # print(index)
-            end=index_start+64*(index+1)
-            param=data[index_start:end]
+        
+        param_len_raw=len(data)-params_index_start
+        params_amount=int(param_len_raw/64)
+        #参数填充
+        if param_len_raw % 64 !=0:
+            need_add_zero_amount= 64- param_len_raw % 64
+            data+="0"*need_add_zero_amount
+            print(need_add_zero_amount)
+            params_amount+=1
+            
+       
+        for index in range(params_amount):
+
+            end=params_index_start+64*(index+1)
+            param=data[params_index_start:end]
             params.append(param)
-            index_start+=end
-        return method_id,params
+            params_index_start+=end
+        return method_id,params,value
 
 
 if __name__ == "__main__":

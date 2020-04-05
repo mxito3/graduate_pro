@@ -435,9 +435,9 @@ def decompile(this_addr, only_func_name=None):
         print(open(this_fname).read())
 
     have_fallback=whether_have_fallback(contract.functions)
-    # print("============{}".format(have_fallback))
-    # print(contract.functions)
-    # print(abi)
+    for func in contract.functions:
+        hash=func.hash
+        abi[hash]['payable']=func.payable
     return abi,have_fallback
 def decompile_bulk(addr_list):
     i = 0

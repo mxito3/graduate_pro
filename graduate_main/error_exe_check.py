@@ -11,10 +11,17 @@ class ErrorCheck():
             calldata=HexBytes(calldata.replace(" ",''))
         abi,have_fallback=ABIUtil.get_abi(contract_addr)
         all_support_funcs=[k for k in abi.keys()]
-        method_id,params=RLPUtil.get_params(calldata)
-        #是误调用
+        method_id,params,value=RLPUtil.get_params(calldata)
+        #函数id是否存在
         if not method_id in all_support_funcs:
             return True
+        #函数参数个数是否一致
+        if len(params)!=len(abi[method_id]['params']):
+            return True
+        #函数是payable的，但是value是0
+        if abi[method_id]['payable'] and value==0:
+            return True
+
         return False
 
 
