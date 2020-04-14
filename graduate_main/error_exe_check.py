@@ -10,6 +10,7 @@ class ErrorCheck():
         if isinstance(calldata,str):
             calldata=HexBytes(calldata.replace(" ",''))
         abi,have_fallback=ABIUtil.get_abi(contract_addr)
+        print(abi)
         all_support_funcs=[k for k in abi.keys()]
         method_id,params,value=RLPUtil.get_params(calldata)
         #函数id是否存在
@@ -23,8 +24,6 @@ class ErrorCheck():
             return True
 
         return False
-
-
 
 
 

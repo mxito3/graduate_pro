@@ -11,8 +11,6 @@ class ABIUtil():
         has_fallback=False
         for k,v in abi.items():
             name=v.get('name')
-            
-            # print(v)
             if not name:
                 name=v.get('fname')
                 if name=="_fallback()":
