@@ -7,6 +7,8 @@ class ABIUtil():
     @staticmethod
     def get_abi(addr):
         abi,have_fallback=decompile(addr)
+        print("反编译.............")
+        print("abi是{}".format(abi))
         result={}
         has_fallback=False
         for k,v in abi.items():

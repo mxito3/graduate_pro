@@ -48,6 +48,11 @@ class RLPUtil():
             param=data[params_index_start:end]
             params.append(param)
             params_index_start+=end
+        print()
+        print("calldata解析的函数id:{}".format(method_id))
+        print("calldata解析的函数参数为:{}".format(params))
+        print("calldata解析的函数参数个数为:{}".format(len(params)))
+        print("calldata解析的发送的ether数量为:{}".format(value))
         return method_id,params,value
 
 

@@ -10,8 +10,10 @@ class ErrorCheck():
         if isinstance(calldata,str):
             calldata=HexBytes(calldata.replace(" ",''))
         abi,have_fallback=ABIUtil.get_abi(contract_addr)
-        print(abi)
+        
         all_support_funcs=[k for k in abi.keys()]
+        print()
+        print("所有支持的函数是{}".format(all_support_funcs))
         method_id,params,value=RLPUtil.get_params(calldata)
         #函数id是否存在
         if not method_id in all_support_funcs:
@@ -25,12 +27,13 @@ class ErrorCheck():
 
         return False
 
-
-
 if __name__ == "__main__":
-    raw="0xf8890f85012a05f200830222e094151a2a029b6149d4bed3d1    \
-1f59abc562b22b664b80a460fe47b1000000000000000000000000000000000000000000000000000000000000\
-04571ba002c5f724d43878e7b26f03d96e0beee8164175bc0a24a18fb6dddb103aa6244ba01a8ad8126ed78df1\
-2c2d2014b8b536e4a3defed878adf2d2adf48b6974db9093"
-    addr="0x455eb180ccA0da93967E713e0e0AdF08e727c353"
-    print(ErrorCheck.is_error_exe(addr,raw))
+    raw="0xf8891185012a05f200830222e0945961ff52353e3e9147bbae2ff7e4a31d172aa49780a460fe47b100000000000000000000000000000000000000000000000000000000000004571ba071974ae3365e1dae3e945bb58caf4433179a316f32f387f955ed6849e0441066a05ad6d5940758e9afe1b74c7ff36c5146a89d00ecb83201340d68595632cea7a1"
+    addr="0xf23B908a4DD82aBf482AF0d1a0F6D99d84b3ABA8"
+    result=ErrorCheck.is_error_exe(addr,raw)
+    print()
+    print("误调用检测中..........")
+    if result:
+        print("此次调用是一次误调用")
+    else:
+        print("此次调用是正常调用")
