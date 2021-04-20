@@ -28,7 +28,7 @@ more-itertools==8.2.0
 packaging==20.3
 parsimonious==0.8.1
 pluggy==0.13.1
-py==1.8.1
+py==1.10.0
 py-solc==3.2.0
 pycryptodome==3.7.3
 pylint==2.4.4
